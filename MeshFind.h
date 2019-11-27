@@ -16,7 +16,10 @@
 #include <vector>
 
 //How close to 1 must a vec3 length be to be considered a normal
-#define NORMAL_TOLERANCE 0.001f 
+#define NORMAL_TOLERANCE 0.01f //1%
+#define NORMAL_MIN_STRIDE 6 //any less and it won't have verticies
+#define NORMAL_MAX_STRIDE 12 //if we have 3 verts, 2 uvs, 3 norms, 3 colors, and 1 extra float for whatever
+
 
 typedef struct {
 	int minLength;
@@ -32,9 +35,14 @@ typedef struct {
 //determine range
 bool mfEvalFloat(float f, mfEvalRules *er);
 
+float mfGetVec3Length(float *f);
+
 //report the end of an array of vertex-like floats
 float *mfGetMeshEndFloat(mfEvalRules *er, float *start, float *cutoff);
 
 void mfRangeFindFloat(std::vector<mfMeshRange> &fv, mfEvalRules *er, uint8_t *start, uint8_t *end);
+
+//stride and offset will pass back the stride and offset if ones are found.
+bool mfHasNormals(int *offset, int *stride, float *start, float *end);
 
 #endif //_MESHFIND_H

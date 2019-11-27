@@ -50,7 +50,16 @@ int main(int argc, char **argv){
 	
 	std::cout << "Found potential ranges at : " << std::endl;
 	for(int i=0; i<mrv.size(); ++i){
-		std::cout << "\t" << (mrv[i].start-(float*)data) << " : " << (mrv[i].end-(float*)data) << std::endl;
+		int offset, stride;
+		std::cout << "\t" << (mrv[i].start-(float*)data) << " : " << (mrv[i].end-(float*)data);
+		
+		if( mfHasNormals(&offset, &stride, 
+			mrv[i].start, mrv[i].end) ){
+			//we have normals
+			std::cout << " normals found at offset " << offset << " and stride " << stride;
+		}
+		
+		std::cout << std::endl;
 	}
 	
 	std::cout << "done!" << std::endl;
