@@ -28,6 +28,25 @@ void rtpFillVector(std::vector<float> &fv, int offset, int stride, float *start,
 		fv.push_back(*start);
 }
 
+int rtpFindVertexElementIndex(float *a, int stride, float *start, float *end){
+	float * realStart = start;
+	for(start;start<end;start+=stride){
+		bool matches = true;
+		for(int i=0;i<stride;++i){
+			if(a[i] != start[i]){
+				matches = false;
+				break;
+			}
+		}
+		
+		if(matches){
+			return (int)(start-realStart);
+		}
+		
+	}
+	return -1;
+}
+
 int rtpFillMeshData(MeshData &md, std::string format, float *start, float *end){
 	//todo...
 	return 0;

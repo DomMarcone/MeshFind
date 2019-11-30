@@ -80,6 +80,15 @@ int main(int argc, char **argv){
 			
 			if(stride == 9 && offset == 6)
 				rtpExportRange(fn, "x y z r g b nx ny nz", mrv[i].start, mrv[i].end);
+			
+			if(stride == 11 && offset == 3)
+				rtpExportRange(fn, "x y z nx ny nz u v r g b", mrv[i].start, mrv[i].end);
+			
+			if(stride == 11 && offset == 5)
+				rtpExportRange(fn, "x y z u v nx ny nz r g b", mrv[i].start, mrv[i].end);
+			
+			if(stride == 11 && offset == 6)
+				rtpExportRange(fn, "x y z r g b nx ny nz u v", mrv[i].start, mrv[i].end);
 
 		} else {
 			rtpExportRange(fn, "x y z u v", mrv[i].start, mrv[i].end);
