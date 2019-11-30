@@ -1,10 +1,10 @@
-//RawToWavefront.h
+//RawToPLY.h
 #pragma once
-#ifndef _RAW_TO_WAVEFRONT_H
-#define _RAW_TO_WAVEFRONT_H
+#ifndef _RAW_TO_PLY_H
+#define _RAW_TO_PLY_H
 
 /*
-**  rtwExportRange() exports an array of raw floats to a wavefront .obj file
+**  rtpExportRange() exports an array of raw floats to a 3d .ply file
 **  -filename - the name of the file to be exported
 **  -format - set what each float represents, whether it's the vertex location, 
 **  	normal, texture coordinate, uv, color, or non-relevant data.
@@ -24,6 +24,6 @@
 #include <fstream>
 #include <string>
 
-int rtwExportRange(std::string filename, std::string format, float *start, float *end);
+int rtpExportRange(std::string filename, std::string format, float *start, float *end);
 
-#endif //_RAW_TO_WAVEFRONT_H
+#endif //_RAW_TO_PLY_H

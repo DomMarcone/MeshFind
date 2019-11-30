@@ -1,6 +1,6 @@
-//RawToWavefront.cc
+//RawToPLY.cc
 
-#include "RawToWavefront.h"
+#include "RawToPLY.h"
 
 #include <iostream>
 #include <fstream>
@@ -22,22 +22,22 @@ typedef struct {
 	std::vector<float> b;
 } MeshData;
 
-void rtwFillVector(std::vector<float> &fv, int offset, int stride, float *start, float *end){
+void rtpFillVector(std::vector<float> &fv, int offset, int stride, float *start, float *end){
 	start += offset;
 	for(;start<end;start+=stride)
 		fv.push_back(*start);
 }
 
-int rtwFillMeshData(MeshData &md, std::string format, float *start, float *end){
+int rtpFillMeshData(MeshData &md, std::string format, float *start, float *end){
 	//todo...
 	return 0;
 }
 
 //overloads
-int rtwExportRange(std::string filename, std::string format, float *start, float *end){
+int rtpExportRange(std::string filename, std::string format, float *start, float *end){
 	MeshData md;
 	//todo...
-	rtwFillMeshData(md, format, start, end);
+	rtpFillMeshData(md, format, start, end);
 	//export MeshData
 	return 0;
 }
