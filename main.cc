@@ -3,8 +3,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 
 #include "MeshFind.h"
+#include "RawToWavefront.h"
 
 int main(int argc, char **argv){
 	std::ifstream infile;
@@ -51,13 +53,39 @@ int main(int argc, char **argv){
 	std::cout << "Found potential ranges at : " << std::endl;
 	for(int i=0; i<mrv.size(); ++i){
 		int offset, stride;
-		std::cout << "\t" << (mrv[i].start-(float*)data) << " : " << (mrv[i].end-(float*)data);
+		std::string fn = argv[1];//out file name
+		fn += std::to_string(mrv[i].start-(float*)data);
+		fn += ":";
+		fn += std::to_string(mrv[i].end-(float*)data);
+		fn += ".obj";
+		
 		
 		if( mfHasNormals(&offset, &stride, 
 			mrv[i].start, mrv[i].end) ){
 			//we have normals
-			std::cout << " normals found at offset " << offset << " and stride " << stride;
+			std::cout << " normals found at offset " << offset << " and stride " << stride << std::endl;
+			
+			//if we have normals, utilize them to determine other data
+			if(stride == 6 && offset == 3)
+				rtwExportRange(fn, "x y z nx ny nz", mrv[i].start, mrv[i].end);
+
+			if(stride == 8 && offset == 3)
+				rtwExportRange(fn, "x y z nx ny nz u v", mrv[i].start, mrv[i].end);
+			
+			if(stride == 8 && offset == 5)
+				rtwExportRange(fn, "x y z u v nx ny nz", mrv[i].start, mrv[i].end);			
+
+			if(stride == 9 && offset == 3)
+				rtwExportRange(fn, "x y z nx ny nz r g b", mrv[i].start, mrv[i].end);
+			
+			if(stride == 9 && offset == 6)
+				rtwExportRange(fn, "x y z r g b nx ny nz", mrv[i].start, mrv[i].end);
+
+		} else {
+			rtwExportRange(fn, "x y z u v", mrv[i].start, mrv[i].end);
 		}
+		
+		std::cout << "\t-exported file : " << fn << std::endl;
 		
 		std::cout << std::endl;
 	}
