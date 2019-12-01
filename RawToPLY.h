@@ -17,7 +17,7 @@
 **  -nx, ny, nz - the noraml direction of the coordinates
 **  -u, v - texture coordinates
 **  -r, g, b - color information
-**  -p - padding, or data which is irrelevant.
+**  -p - padding, or data which is irrelevant that's the same as a float.
 */
 
 #include <iostream>

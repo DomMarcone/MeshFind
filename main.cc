@@ -54,10 +54,17 @@ int main(int argc, char **argv){
 	for(int i=0; i<mrv.size(); ++i){
 		int offset, stride;
 		std::string fn = argv[1];//out file name
+		
+		//dump the raw output locally
+		fn.erase(fn.begin(), fn.begin() + fn.find_last_of('\\')+1);
+		fn.erase(fn.begin(), fn.begin() + fn.find_last_of('/')+1);
+		
+		
+		
 		fn += std::to_string(mrv[i].start-(float*)data);
-		fn += ":";
+		fn += "-";
 		fn += std::to_string(mrv[i].end-(float*)data);
-		fn += ".obj";
+		fn += ".ply";
 		
 		
 		if( mfHasNormals(&offset, &stride, 
