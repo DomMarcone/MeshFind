@@ -21,11 +21,11 @@ float *mfGetMeshEndFloat(mfEvalRules *er, float *start, float *cutoff){
 }
 
 
-void mfRangeFindFloat(std::vector<mfMeshRange> &fv, mfEvalRules *er, uint8_t *start, uint8_t *end){
-	float *newEnd = (float*)end-(sizeof(float)*er->minLength);
+void mfRangeFindFloat(std::vector<mfMeshRange> &fv, mfEvalRules *er, char *start, char *end){
+	char *newEnd = end-(sizeof(float)*er->minLength);
 	float *endF = (float*)end;
 	
-	for(;start<end;start++){
+	for(;start<newEnd; start++){
 		float *startF = (float*)start;
 		if(mfEvalFloat(*startF,er)){
 			float *meshEnd = mfGetMeshEndFloat(er,startF,endF);
@@ -37,7 +37,7 @@ void mfRangeFindFloat(std::vector<mfMeshRange> &fv, mfEvalRules *er, uint8_t *st
 				mr.end = meshEnd;
 				fv.push_back(mr);
 				
-				start = (uint8_t*)meshEnd;
+				start = (char*)meshEnd;
 			}
 		}
 	}
@@ -89,5 +89,37 @@ bool mfHasNormals(int *offset, int *stride, float *start, float *end){
 	}
 	
 	return result;
+}
+
+//get the last 
+int *mfGetIndiciesEnd(int maxValue, int *start, int *end){
+	for(;start<end && 
+		*start < maxValue &&
+		*start >= 0;++start)
+	return start--;
+}
+
+
+void mfRangeFindIndices(std::vector<mfIndexRange> &iv, int minLength, char *start, char *end){
+	char *newEnd = end-(sizeof(int)*minLength);
+	int *endI = (int*)end;
+	int maxValue = ((int)start-(int)end)/sizeof(int);
+	
+	for(;start<newEnd; start++){
+		int *startI = (int*)start;
+		if(*startI >=0 && *startI <= maxValue){
+			int *indexEnd = mfGetIndiciesEnd(maxValue, startI, endI);
+			
+			if( (indexEnd-startI)/sizeof(int) >= minLength ){
+				//we have found a valid range!
+				mfIndexRange ir;
+				ir.start = startI;
+				ir.end = indexEnd;
+				iv.push_back(ir);
+				
+				start = (char*)indexEnd;
+			}
+		}
+	}
 }
 

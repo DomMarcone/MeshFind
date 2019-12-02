@@ -103,13 +103,6 @@ int main(int argc, char **argv){
 	char *data;
 	size_t dataSize;
 	
-	std::vector<mfMeshRange> mrv;
-	mfEvalRules er;
-	
-	//initialize rules
-	er.minLength = 100;
-	er.min = -400.f;
-	er.max = 400.f;
 	
 	if(inFileName.size()==0){
 		std::cout << "No file selected!" << std::endl;
@@ -139,25 +132,56 @@ int main(int argc, char **argv){
 	
 
 	if(analyze){
+		std::vector<mfMeshRange> mrv;
+		std::vector<mfIndexRange> irv;
+		mfEvalRules er;
+		
+		//initialize rules
+		er.minLength = 100;
+		er.min = -400.f;
+		er.max = 400.f;
 		
 		std::cout << "Searching for ranges of valid floating point numbers..." << std::endl;
 		
-		mfRangeFindFloat(mrv, &er, (uint8_t*)data, (uint8_t*)data+dataSize);
+		mfRangeFindFloat(mrv, &er, data, data+dataSize);
 		
-		std::cout << "Found potential ranges at : " << std::endl;
-		for(int i=0; i<mrv.size(); ++i){
-			int offset, stride;
+		mfRangeFindIndices(irv, er.minLength, data, data+dataSize);
+
+		
+		if(mrv.size()>0){
+			std::cout << "Found potential float/vec3 array(s) at : " << std::endl;
+			for(int i=0; i<mrv.size(); ++i){
+				int offset, stride;
+				
+				std::cout << " *float range " << i << std::endl;
+				std::cout << "   start : " << (char*)mrv[i].start-data << std::endl;
+				std::cout << "   end   : " << (char*)mrv[i].end-data << std::endl;
+				
+				if( mfHasNormals(&offset, &stride, 
+					mrv[i].start, mrv[i].end) ){
+					//we have normals
+					std::cout << "   potential normals found at offset " << offset << " and stride " << stride << std::endl;
+				} 
+				
+				std::cout << std::endl;
+			}
+		} else {
+			std::cout << "Found no potnential float arrays!" << std::endl;
+		}
+		
+		if(irv.size()>0){
+			std::cout << "Found potential index array(s) at :" << std::endl;
 			
-			std::cout << " -range " << i << std::endl;
-			std::cout << "   start : " << (char*)mrv[i].start-data << std::endl;
-			std::cout << "   end   : " << (char*)mrv[i].end-data << std::endl;
+			for(int i=0; i<irv.size(); ++i){
+				std::cout << " *integer range " << i << std::endl;
+				std::cout << "   start : " << (char*)irv[i].start-data << std::endl;
+				std::cout << "   end   : " << (char*)irv[i].end-data << std::endl;
+			}
 			
-			if( mfHasNormals(&offset, &stride, 
-				mrv[i].start, mrv[i].end) ){
-				//we have normals
-				std::cout << "   *potential normals found at offset " << offset << " and stride " << stride << std::endl;
-			} 
+			std::cout << std::endl;
 			
+		} else {
+			std::cout << "Found no potential index arrays!" << std::endl;
 		}
 	}
 	

@@ -32,6 +32,11 @@ typedef struct {
 	float *end;
 } mfMeshRange;
 
+typedef struct {
+	int *start;
+	int *end;
+} mfIndexRange;
+
 //determine range
 bool mfEvalFloat(float f, mfEvalRules *er);
 
@@ -40,7 +45,9 @@ float mfGetVec3Length(float *f);
 //report the end of an array of vertex-like floats
 float *mfGetMeshEndFloat(mfEvalRules *er, float *start, float *cutoff);
 
-void mfRangeFindFloat(std::vector<mfMeshRange> &fv, mfEvalRules *er, uint8_t *start, uint8_t *end);
+void mfRangeFindFloat(std::vector<mfMeshRange> &fv, mfEvalRules *er, char *start, char *end);
+
+void mfRangeFindIndices(std::vector<mfIndexRange> &iv, int minLength, char *start, char *end);
 
 //stride and offset will pass back the stride and offset if ones are found.
 bool mfHasNormals(int *offset, int *stride, float *start, float *end);
