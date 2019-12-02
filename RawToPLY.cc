@@ -342,7 +342,7 @@ void rtpExportMeshData(MeshData &md, std::string filename){
 	outFile.close();
 }
 
-//overloads
+
 int rtpExportRange(std::string filename, std::string format, float *start, float *end){
 	MeshData md;
 	//todo...
