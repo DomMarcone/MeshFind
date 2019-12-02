@@ -154,8 +154,9 @@ int main(int argc, char **argv){
 				int offset, stride;
 				
 				std::cout << " *float range " << i << std::endl;
-				std::cout << "   start : " << (char*)mrv[i].start-data << std::endl;
-				std::cout << "   end   : " << (char*)mrv[i].end-data << std::endl;
+				std::cout << "   start  : " << (char*)mrv[i].start-data << std::endl;
+				std::cout << "   end    : " << (char*)mrv[i].end-data << std::endl;
+				std::cout << "   length : " << (int)(mrv[i].end - mrv[i].start)/sizeof(float) << std::endl;
 				
 				if( mfHasNormals(&offset, &stride, 
 					mrv[i].start, mrv[i].end) ){
@@ -174,8 +175,9 @@ int main(int argc, char **argv){
 			
 			for(int i=0; i<irv.size(); ++i){
 				std::cout << " *integer range " << i << std::endl;
-				std::cout << "   start : " << (char*)irv[i].start-data << std::endl;
-				std::cout << "   end   : " << (char*)irv[i].end-data << std::endl;
+				std::cout << "   start  : " << (char*)irv[i].start-data << std::endl;
+				std::cout << "   end    : " << (char*)irv[i].end-data << std::endl;
+				std::cout << "   length : " << (int)(irv[i].end - irv[i].start)/sizeof(int) << std::endl;
 			}
 			
 			std::cout << std::endl;
