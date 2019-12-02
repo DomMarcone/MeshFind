@@ -92,9 +92,9 @@ bool rtpCompareMeshDataIndex(MeshData &md, int a, int b){
 	
 	if(a == b)return true;
 	
-	if(md.x[a] != md.x[a])return false;
-	if(md.y[a] != md.y[a])return false;
-	if(md.z[a] != md.z[a])return false;
+	if(md.x[a] != md.x[b])return false;
+	if(md.y[a] != md.y[b])return false;
+	if(md.z[a] != md.z[b])return false;
 	
 	if(md.nx.size()>0 && md.nx[a] != md.nx[b])return false;
 	if(md.ny.size()>0 && md.ny[a] != md.ny[b])return false;
@@ -106,6 +106,31 @@ bool rtpCompareMeshDataIndex(MeshData &md, int a, int b){
 	if(md.r.size()>0 && md.r[a] != md.r[b])return false;
 	if(md.g.size()>0 && md.g[a] != md.g[b])return false;
 	if(md.b.size()>0 && md.b[a] != md.b[b])return false;
+	
+	return true;
+}
+
+
+bool rtpCompareMeshDataIndex2(MeshData &md0, MeshData &md1, int i0, int i1){
+	int size0 = rtpMeshDataLength(md0);	
+	int size1 = rtpMeshDataLength(md1);	
+	if(i0<0 || i0>=size0)return false;
+	if(i1<0 || i1>=size1)return false;
+		
+	if(md0.x[i0] != md1.x[i1])return false;
+	if(md0.y[i0] != md1.y[i1])return false;
+	if(md0.z[i0] != md1.z[i1])return false;
+	
+	if(md0.nx.size()>0 && md1.nx.size()>0 && md0.nx[i0] != md1.nx[i1])return false;
+	if(md0.ny.size()>0 && md1.ny.size()>0 && md0.ny[i0] != md1.ny[i1])return false;
+	if(md0.nz.size()>0 && md1.nz.size()>0 && md0.nz[i0] != md1.nz[i1])return false;
+	
+	if(md0.u.size()>0 && md1.u.size()>0 && md0.u[i0] != md1.u[i1])return false;
+	if(md0.v.size()>0 && md1.v.size()>0 && md0.v[i0] != md1.v[i1])return false;
+	
+	if(md0.r.size()>0 && md1.r.size()>0 && md0.r[i0] != md1.r[i1])return false;
+	if(md0.g.size()>0 && md1.g.size()>0 && md0.g[i0] != md1.g[i1])return false;
+	if(md0.b.size()>0 && md1.b.size()>0 && md0.b[i0] != md1.b[i1])return false;
 	
 	return true;
 }
@@ -123,6 +148,17 @@ int rtpFindFirstIndex(MeshData &md, int index){
 	return index;
 }
 
+int rtpFindMatchingIndex(MeshData &md, MeshData &target, int index){
+	if(index >= rtpMeshDataLength(md))return 0;
+
+	for(int i=0;i<rtpMeshDataLength(target);++i){
+		if(rtpCompareMeshDataIndex2(md,target,index,i)){
+			return i;
+		}
+	}
+
+	return 0;
+}
 
 void rtpFillVector(std::vector<float> &fv, int offset, int stride, float *start, float *end){
 	start += offset;
@@ -188,25 +224,57 @@ void rtpFillMeshData(MeshData &md, std::string format, float *start, float *end)
 	}
 }
 
+void rtpMeshDataCopy(MeshData &destination, MeshData &source){
+	
+	destination.x = source.x;
+	destination.y = source.y;
+	destination.z = source.z;
+	destination.nx = source.nx;
+	destination.ny = source.ny;
+	destination.nz = source.nz;
+	destination.u = source.u;
+	destination.v = source.v;
+	destination.r = source.r;
+	destination.g = source.g;
+	destination.b = source.b;
+}
+
 void rtpMeshDataRemoveDuplicates(MeshData &md){
-	bool checkNx, checkNy, checkNz, checkU, checkV, checkR, checkG, checkB;
+	int meshLength = rtpMeshDataLength(md);
 	
-	checkNx = (bool)md.nx.size();
-	checkNy = (bool)md.ny.size();
-	checkNz = (bool)md.nz.size();
-	checkU = (bool)md.u.size();
-	checkV = (bool)md.v.size();
-	checkR = (bool)md.r.size();
-	checkG = (bool)md.g.size();
-	checkB = (bool)md.b.size();
-	
-	//todo
+	for(int i=1;i<meshLength;){
+		if(i != rtpFindFirstIndex(md,i)){//this index is a repeat
+			//so remove it
+			
+			if(md.x.size()>i)md.x.erase(md.x.begin()+i);
+			if(md.y.size()>i)md.y.erase(md.y.begin()+i);
+			if(md.z.size()>i)md.z.erase(md.z.begin()+i);
+			
+			if(md.nx.size()>i)md.nx.erase(md.nx.begin()+i);
+			if(md.ny.size()>i)md.ny.erase(md.ny.begin()+i);
+			if(md.nz.size()>i)md.nz.erase(md.nz.begin()+i);
+			
+			if(md.u.size()>i)md.u.erase(md.u.begin()+i);
+			if(md.v.size()>i)md.v.erase(md.v.begin()+i);
+			
+			if(md.r.size()>i)md.r.erase(md.r.begin()+i);
+			if(md.g.size()>i)md.g.erase(md.g.begin()+i);
+			if(md.b.size()>i)md.b.erase(md.b.begin()+i);
+			
+			//and account for the change in length
+			meshLength = rtpMeshDataLength(md);
+			
+		} else {
+			i++;
+		}
+	}
 	
 }
 
 void rtpExportMeshData(MeshData &md, std::string filename){
 	std::ofstream outFile(filename);
-	int mdSize = rtpMeshDataLength(md);
+	int mdCompactSize, mdSize = rtpMeshDataLength(md);
+	MeshData mdCompact;
 	
 	if(!outFile.is_open()){
 		std::cout << "Error creating " << filename << " for export!" << std::endl;
@@ -239,23 +307,25 @@ void rtpExportMeshData(MeshData &md, std::string filename){
 	outFile << "end_header" << std::endl;
 	
 	//output the vertex elements
-	rtpMeshDataRemoveDuplicates(md);
+	rtpMeshDataCopy(mdCompact, md);
+	rtpMeshDataRemoveDuplicates(mdCompact);
+	mdCompactSize = rtpMeshDataLength(mdCompact);
 	
-	for(int i=0;i<mdSize;++i){
-		outFile << md.x[i] << " ";
-		outFile << md.y[i] << " ";
-		outFile << md.z[i] << " ";
+	for(int i=0;i<mdCompactSize;++i){
+		outFile << mdCompact.x[i] << " ";
+		outFile << mdCompact.y[i] << " ";
+		outFile << mdCompact.z[i] << " ";
 		
-		if(md.nx.size())outFile << md.nx[i] << " ";
-		if(md.ny.size())outFile << md.ny[i] << " ";
-		if(md.nz.size())outFile << md.nz[i] << " ";
+		if(mdCompact.nx.size())outFile << mdCompact.nx[i] << " ";
+		if(mdCompact.ny.size())outFile << mdCompact.ny[i] << " ";
+		if(mdCompact.nz.size())outFile << mdCompact.nz[i] << " ";
 		
-		if(md.u.size())outFile << md.u[i] << " ";
-		if(md.v.size())outFile << md.v[i] << " ";
+		if(mdCompact.u.size())outFile << mdCompact.u[i] << " ";
+		if(mdCompact.v.size())outFile << mdCompact.v[i] << " ";
 		
-		if(md.r.size())outFile << md.r[i] << " ";
-		if(md.g.size())outFile << md.g[i] << " ";
-		if(md.b.size())outFile << md.b[i];
+		if(mdCompact.r.size())outFile << mdCompact.r[i] << " ";
+		if(mdCompact.g.size())outFile << mdCompact.g[i] << " ";
+		if(mdCompact.b.size())outFile << mdCompact.b[i];
 		
 		outFile << std::endl;
 	}
@@ -263,9 +333,9 @@ void rtpExportMeshData(MeshData &md, std::string filename){
 	for(int i=0;i<mdSize;i+=3){
 		int f0, f1, f2;
 		
-		f0 = rtpFindFirstIndex(md, i);
-		f1 = rtpFindFirstIndex(md, i+1);
-		f2 = rtpFindFirstIndex(md, i+2);
+		f0 = rtpFindMatchingIndex(md, mdCompact, i);
+		f1 = rtpFindMatchingIndex(md, mdCompact, i+1);
+		f2 = rtpFindMatchingIndex(md, mdCompact, i+2);
 		
 		outFile << "3 " << f0 << " " << f1 << " " << f2 << std::endl;
 	}
