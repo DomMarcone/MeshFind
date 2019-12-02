@@ -6,8 +6,11 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <cfloat>
 
 bool mfEvalFloat(float f, mfEvalRules *er){
+	if(std::isnan(f))return false;
+	if(std::isinf(f))return false;
 	if(f < er->min)return false;
 	if(f > er->max)return false;
 	//put other constraints here

@@ -138,8 +138,8 @@ int main(int argc, char **argv){
 		
 		//initialize rules
 		er.minLength = 100;
-		er.min = -400.f;
-		er.max = 400.f;
+		er.min = -800.f;
+		er.max = 800.f;
 		
 		std::cout << "Searching for ranges of valid floating point numbers..." << std::endl;
 		
