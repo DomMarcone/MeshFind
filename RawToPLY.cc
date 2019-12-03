@@ -169,56 +169,61 @@ void rtpFillVector(std::vector<float> &fv, int offset, int stride, float *start,
 
 void rtpFillMeshData(MeshData &md, std::string format, float *start, float *end){
 	int stride = rtpFormatElementCount(format);
-	
+	int offset = 0;
+		
 	for(int i=0;i<format.size();++i){
 		switch(format[i]){
 		case 'x' :
-			rtpFillVector(md.x, i, stride, start, end);
+			rtpFillVector(md.x, offset++, stride, start, end);
 			break;
 			
 		case 'y' :
-			rtpFillVector(md.y, i, stride, start, end);
+			rtpFillVector(md.y, offset++, stride, start, end);
 			break;
 			
 		case 'z' :
-			rtpFillVector(md.z, i, stride, start, end);
+			rtpFillVector(md.z, offset++, stride, start, end);
 			break;
 
 		case 'n' : //normals
 			i++;//what's the next character?
 			switch(format[i]){
 			case 'x' :
-				rtpFillVector(md.nx, i, stride, start, end);
+				rtpFillVector(md.nx, offset++, stride, start, end);
 				break;
 				
 			case 'y' :
-				rtpFillVector(md.ny, i, stride, start, end);
+				rtpFillVector(md.ny, offset++, stride, start, end);
 				break;
 				
 			case 'z' :
-				rtpFillVector(md.nz, i, stride, start, end);
+				rtpFillVector(md.nz, offset++, stride, start, end);
 				break;
 			}
 			break;//END NORMALS
 			
 		case 'u' :
-			rtpFillVector(md.u, i, stride, start, end);
+			rtpFillVector(md.u, offset++, stride, start, end);
 			break;
 			
 		case 'v' :
-			rtpFillVector(md.v, i, stride, start, end);
+			rtpFillVector(md.v, offset++, stride, start, end);
 			break;
 			
 		case 'r' :
-			rtpFillVector(md.r, i, stride, start, end);
+			rtpFillVector(md.r, offset++, stride, start, end);
 			break;
 			
 		case 'g' :
-			rtpFillVector(md.g, i, stride, start, end);
+			rtpFillVector(md.g, offset++, stride, start, end);
 			break;
 			
 		case 'b' :
-			rtpFillVector(md.b, i, stride, start, end);
+			rtpFillVector(md.b, offset++, stride, start, end);
+			break;
+		
+		case 'p' : //padding
+			offset++;
 			break;
 		}
 	}
@@ -281,11 +286,16 @@ void rtpExportMeshData(MeshData &md, std::string filename){
 		exit(-1);
 	}
 	
+	//copy and remove duplicates...
+	rtpMeshDataCopy(mdCompact, md);
+	rtpMeshDataRemoveDuplicates(mdCompact);
+	mdCompactSize = rtpMeshDataLength(mdCompact);
+	
 	//Create the file header...
 	outFile << "ply" << std::endl;
 	outFile << "format ascii 1.0" << std::endl;
 	outFile << "comment Generated with MeshFind" << std::endl;
-	outFile << "element vertex " << mdSize << std::endl;
+	outFile << "element vertex " << mdCompactSize << std::endl;
 	outFile << "property float x" << std::endl;
 	outFile << "property float y" << std::endl;
 	outFile << "property float z" << std::endl;
@@ -307,9 +317,6 @@ void rtpExportMeshData(MeshData &md, std::string filename){
 	outFile << "end_header" << std::endl;
 	
 	//output the vertex elements
-	rtpMeshDataCopy(mdCompact, md);
-	rtpMeshDataRemoveDuplicates(mdCompact);
-	mdCompactSize = rtpMeshDataLength(mdCompact);
 	
 	for(int i=0;i<mdCompactSize;++i){
 		outFile << mdCompact.x[i] << " ";
