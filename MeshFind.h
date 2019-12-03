@@ -37,6 +37,11 @@ typedef struct {
 	int *end;
 } mfIndexRange;
 
+typedef struct {
+	float min;
+	float max;
+} mfRange;
+
 //determine range
 bool mfEvalFloat(float f, mfEvalRules *er);
 
@@ -51,5 +56,7 @@ void mfRangeFindIndices(std::vector<mfIndexRange> &iv, int minLength, char *star
 
 //stride and offset will pass back the stride and offset if ones are found.
 bool mfHasNormals(int *offset, int *stride, float *start, float *end);
+
+void mfGetRange(mfRange &r, float *start, float *end);
 
 #endif //_MESHFIND_H

@@ -126,3 +126,12 @@ void mfRangeFindIndices(std::vector<mfIndexRange> &iv, int minLength, char *star
 	}
 }
 
+void mfGetRange(mfRange &r, float *start, float *end){
+	r.min = *start;
+	r.max = *start;
+	start++;
+	for(;start<end;++start){
+		if(*start<r.min)r.min = *start;
+		else if(*start>r.max)r.max = *start;
+	}
+}

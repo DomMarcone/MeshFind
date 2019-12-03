@@ -152,11 +152,16 @@ int main(int argc, char **argv){
 			std::cout << "Found potential float/vec3 array(s) at : " << std::endl;
 			for(int i=0; i<mrv.size(); ++i){
 				int offset, stride;
+				mfRange range;
+				
+				mfGetRange(range, mrv[i].start, mrv[i].end);
 				
 				std::cout << " *float range " << i << std::endl;
-				std::cout << "   start  : " << (char*)mrv[i].start-data << std::endl;
-				std::cout << "   end    : " << (char*)mrv[i].end-data << std::endl;
-				std::cout << "   length : " << (int)(mrv[i].end - mrv[i].start)/sizeof(float) << std::endl;
+				std::cout << "   start     : " << (char*)mrv[i].start-data << std::endl;
+				std::cout << "   end       : " << (char*)mrv[i].end-data << std::endl;
+				std::cout << "   length    : " << (int)(mrv[i].end - mrv[i].start)/sizeof(float) << std::endl;
+				std::cout << "   min value : " << range.min << std::endl;
+				std::cout << "   max value : " << range.max << std::endl;
 				
 				if( mfHasNormals(&offset, &stride, 
 					mrv[i].start, mrv[i].end) ){
