@@ -32,7 +32,7 @@ int main(int argc, char **argv){
 	
 	
 	int start = 0;
-	int end = 0;
+	int end = -1;
 	std::string format = "";
 	bool analyze = false;
 	std::string outFileName;
@@ -146,8 +146,14 @@ int main(int argc, char **argv){
 	
 	std::cout << "Reading " << inFileName << "..." << std::endl;
 	
-	data = new char[dataSize];
-	inFile.read(data, dataSize);
+	if(end>dataSize){
+		std::cout << "end is past the end of data!" << std::endl;
+		end = dataSize;
+	}	
+	
+	data = new char[end-start];
+	inFile.seekg(start, std::ios::beg);
+	inFile.read(data, end-start);
 	
 	inFile.close();//no longer needed
 	
@@ -164,9 +170,9 @@ int main(int argc, char **argv){
 		
 		std::cout << "Searching for ranges of valid floating point numbers..." << std::endl;
 		
-		mfRangeFindFloat(mrv, &er, data, data+dataSize);
+		mfRangeFindFloat(mrv, &er, data, data+(end-start));
 		
-		mfRangeFindIndices(irv, er.minLength, data, data+dataSize);
+		mfRangeFindIndices(irv, er.minLength, data, data+(end-start));
 
 		
 		if(mrv.size()>0){
@@ -178,8 +184,8 @@ int main(int argc, char **argv){
 				mfGetRange(range, mrv[i].start, mrv[i].end);
 				
 				std::cout << " *float range " << i << std::endl;
-				std::cout << "   start     : " << (char*)mrv[i].start-data << std::endl;
-				std::cout << "   end       : " << (char*)mrv[i].end-data << std::endl;
+				std::cout << "   start     : " << (char*)mrv[i].start-data + start << std::endl;
+				std::cout << "   end       : " << (char*)mrv[i].end-data + start << std::endl;
 				std::cout << "   length    : " << (int)(mrv[i].end - mrv[i].start)/sizeof(float) << std::endl;
 				std::cout << "   min value : " << range.min << std::endl;
 				std::cout << "   max value : " << range.max << std::endl;
@@ -201,8 +207,8 @@ int main(int argc, char **argv){
 			
 			for(int i=0; i<irv.size(); ++i){
 				std::cout << " *integer range " << i << std::endl;
-				std::cout << "   start  : " << (char*)irv[i].start-data << std::endl;
-				std::cout << "   end    : " << (char*)irv[i].end-data << std::endl;
+				std::cout << "   start  : " << (char*)irv[i].start-data + start << std::endl;
+				std::cout << "   end    : " << (char*)irv[i].end-data + start << std::endl;
 				std::cout << "   length : " << (int)(irv[i].end - irv[i].start)/sizeof(int) << std::endl;
 			}
 			
@@ -228,7 +234,7 @@ int main(int argc, char **argv){
 		}
 		
 		std::cout << "exporting file " << outFileName << std::endl;
-		rtpExportRange(outFileName, format, faceVerts, (float*)&data[start], (float*)&data[end]);
+		rtpExportRange(outFileName, format, faceVerts, (float*)data, (float*)&data[end-start]);
 		std::cout << "done!" << std::endl;
 	}
 	
