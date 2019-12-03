@@ -24,6 +24,6 @@
 #include <fstream>
 #include <string>
 
-int rtpExportRange(std::string filename, std::string format, float *start, float *end);
+int rtpExportRange(std::string filename, std::string format, int faceVerts, float *start, float *end);
 
 #endif //_RAW_TO_PLY_H

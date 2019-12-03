@@ -47,7 +47,11 @@ int rtpFormatElementCount(std::string format){
 
 
 int rtpMeshDataElementCount(MeshData &md){
-	int result = 3;
+	int result = 0;
+	
+	if(md.x.size())result++;
+	if(md.y.size())result++;
+	if(md.z.size())result++;
 	
 	if(md.nx.size())result++;
 	if(md.ny.size())result++;
@@ -276,7 +280,7 @@ void rtpMeshDataRemoveDuplicates(MeshData &md){
 	
 }
 
-void rtpExportMeshData(MeshData &md, std::string filename){
+void rtpExportMeshData(MeshData &md, int faceVerts, std::string filename){
 	std::ofstream outFile(filename);
 	int mdCompactSize, mdSize = rtpMeshDataLength(md);
 	MeshData mdCompact;
@@ -311,7 +315,7 @@ void rtpExportMeshData(MeshData &md, std::string filename){
 	if(md.g.size())outFile << "property float blue" << std::endl;
 	if(md.b.size())outFile << "property float green" << std::endl;
 	
-	outFile << "element face " << mdSize/3 << std::endl;
+	outFile << "element face " << mdSize/faceVerts << std::endl;
 	
 	outFile << "property list uchar int vertex_indices" << std::endl;
 	outFile << "end_header" << std::endl;
@@ -337,24 +341,23 @@ void rtpExportMeshData(MeshData &md, std::string filename){
 		outFile << std::endl;
 	}
 	
-	for(int i=0;i<mdSize;i+=3){
-		int f0, f1, f2;
+	for(int i=0;i<mdSize;i+=faceVerts){
+		outFile << faceVerts << " "; 
 		
-		f0 = rtpFindMatchingIndex(md, mdCompact, i);
-		f1 = rtpFindMatchingIndex(md, mdCompact, i+1);
-		f2 = rtpFindMatchingIndex(md, mdCompact, i+2);
-		
-		outFile << "3 " << f0 << " " << f1 << " " << f2 << std::endl;
+		for(int j=0;j<faceVerts;++j){
+			outFile << rtpFindMatchingIndex(md, mdCompact, i+j) << " ";
+		}
+		outFile << std::endl;
 	}
 	outFile.close();
 }
 
 
-int rtpExportRange(std::string filename, std::string format, float *start, float *end){
+int rtpExportRange(std::string filename, std::string format, int faceVerts, float *start, float *end){
 	MeshData md;
 	//todo...
 	rtpFillMeshData(md, format, start, end);
 
-	rtpExportMeshData(md, filename);
+	rtpExportMeshData(md, faceVerts, filename);
 	return 0;
 }

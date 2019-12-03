@@ -17,17 +17,19 @@ void printUsage(){
 
 void printOptions(){
 	std::cout << "Options :" << std::endl;
-	std::cout << "  -s, --start    The begining of the mesh data within the file" << std::endl;
-	std::cout << "  -e, --end      The end of the mesh data within the file" << std::endl;
-	std::cout << "  -f, --format   How the mesh data is formated" << std::endl;
-	std::cout << "  -a, --analyze  Analyze the file. Search for potential float arrays" << std::endl;
-	std::cout << "  -o, --output   Output file name (*.ply)" << std::endl;
-	std::cout << "  -i, --input    Binary input file name" << std::endl;
-	std::cout << "  -h, --help     Print help information and exit" << std::endl;
+	std::cout << "  -s, --start       The begining of the mesh data within the file" << std::endl;
+	std::cout << "  -e, --end         The end of the mesh data within the file" << std::endl;
+	std::cout << "  -f, --format      How the mesh data is formated" << std::endl;
+	std::cout << "  -a, --analyze     Analyze the file" << std::endl;
+	std::cout << "  -o, --output      Output file name (*.ply)" << std::endl;
+	std::cout << "  -i, --input       Binary input file name" << std::endl;
+	std::cout << "  -v, --face-verts  Binary input file name" << std::endl;
+	std::cout << "  -h, --help        Print help information and exit" << std::endl;
 }
 
 int main(int argc, char **argv){
 	std::ifstream inFile;
+	
 	
 	int start = 0;
 	int end = 0;
@@ -35,15 +37,19 @@ int main(int argc, char **argv){
 	bool analyze = false;
 	std::string outFileName;
 	std::string inFileName;
+	int faceVerts = 3;
 	
 	//go through arguments
 	for(int i=1;i<argc;++i){
+		//print help
 		if( !strcmp(argv[i],"-h") || !strcmp(argv[i],"--help")){
 			printUsage();
+			std::cout << std::endl;
 			printOptions();
 			exit(0);
 		}
 		
+		//input file name
 		if( !strcmp(argv[i],"-i") || !strcmp(argv[i],"--input")){
 			i++;
 			if(i<argc){
@@ -54,6 +60,7 @@ int main(int argc, char **argv){
 			}
 		}
 		
+		//output file name
 		if( !strcmp(argv[i],"-o") || !strcmp(argv[i],"--output")){
 			i++;
 			if(i<argc){
@@ -64,6 +71,7 @@ int main(int argc, char **argv){
 			}
 		}
 		
+		//start
 		if( !strcmp(argv[i],"-s") || !strcmp(argv[i],"--start")){
 			i++;
 			if(i<argc){
@@ -74,6 +82,7 @@ int main(int argc, char **argv){
 			}
 		}
 		
+		//end
 		if( !strcmp(argv[i],"-e") || !strcmp(argv[i],"--end")){
 			i++;
 			if(i<argc){
@@ -84,6 +93,7 @@ int main(int argc, char **argv){
 			}
 		}
 		
+		//format string
 		if( !strcmp(argv[i],"-f") || !strcmp(argv[i],"--format")){
 			i++;
 			if(i<argc){
@@ -94,10 +104,21 @@ int main(int argc, char **argv){
 			}
 		}
 		
+		//analyze?
 		if( !strcmp(argv[i],"-a") || !strcmp(argv[i],"--analyze")){
 			analyze = true;
 		}
 		
+		//face verticies
+		if( !strcmp(argv[i],"-v") || !strcmp(argv[i],"--face-verts")){
+			i++;
+			if(i<argc){
+				faceVerts = atoi(argv[i]);
+			} else {
+				std::cout << "Couldn't get argument for format" << std::endl;
+				exit(-1);
+			}
+		}
 	}
 	
 	char *data;
@@ -192,7 +213,8 @@ int main(int argc, char **argv){
 		}
 	}
 	
-	if(start<end && !format.empty()){//output some data
+	//output some data
+	if(start<end && !format.empty()){
 		if(outFileName.empty()){
 			outFileName = inFileName;
 			
@@ -206,7 +228,7 @@ int main(int argc, char **argv){
 		}
 		
 		std::cout << "exporting file " << outFileName << std::endl;
-		rtpExportRange(outFileName, format, (float*)&data[start], (float*)&data[end]);
+		rtpExportRange(outFileName, format, faceVerts, (float*)&data[start], (float*)&data[end]);
 		std::cout << "done!" << std::endl;
 	}
 	
