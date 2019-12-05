@@ -23,8 +23,17 @@ void printOptions(){
 	std::cout << "  -a, --analyze     Analyze the file" << std::endl;
 	std::cout << "  -o, --output      Output file name (*.ply)" << std::endl;
 	std::cout << "  -i, --input       Binary input file name" << std::endl;
-	std::cout << "  -v, --face-verts  Binary input file name" << std::endl;
+	std::cout << "  -v, --face-verts  Number of verticies per face" << std::endl;
 	std::cout << "  -h, --help        Print help information and exit" << std::endl;
+}
+
+void printFormat(){
+	std::cout << "Format Options :" << std::endl;
+	std::cout << "  x y z             vertex position coordinates" << std::endl;
+	std::cout << "  nx ny nz          normal directions" << std::endl;
+	std::cout << "  u v               texture coordinates" << std::endl;
+	std::cout << "  r g b             red green and blue vertex colors" << std::endl;
+	std::cout << "  p                 padding, which doesn't contribute to the output" << std::endl;
 }
 
 int main(int argc, char **argv){
@@ -46,6 +55,9 @@ int main(int argc, char **argv){
 			printUsage();
 			std::cout << std::endl;
 			printOptions();
+			std::cout << std::endl;
+			printFormat();
+			std::cout << std::endl;
 			exit(0);
 		}
 		
