@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <algorithm>
 #include <cmath>
 
 
@@ -24,10 +25,10 @@ typedef struct {
 } MeshData;
 
 
-int rtpFormatElementCount(std::string format){
+int rtpFormatElementCount(std::string::iterator fBegin, std::string::iterator fEnd){
 	int result = 0;
-	for(int i=0;i<format.size();++i){
-		switch(format[i]){
+	for(; fBegin < fEnd ;++fBegin){
+		switch(*fBegin){
 			case 'x' :
 			case 'y' :
 			case 'z' :
@@ -164,6 +165,35 @@ int rtpFindMatchingIndex(MeshData &md, MeshData &target, int index){
 	return 0;
 }
 
+
+//count the number of comma delimited sections
+int rtpGetFormatSections(std::string format){
+	//cache result.
+	//todo : make this thread safe
+	static int last_result = 0;
+	static std::string *last_format = 0;
+
+	if(last_format == &format){
+		return last_result;
+	} else {
+		last_format = &format;
+		last_result = std::count(format.begin(), format.end(), ',') + 1;
+	}
+	
+	return last_result;
+}
+
+
+std::string::iterator rtpGetFormatSectionStart(std::string format, int section){
+	if(section>=rtpGetFormatSections(format))return format.end();
+	
+	for(int i=0; i<format.size(); ++i){
+		if(format[i]==',')section--;
+		if(section<=0)return format.begin() + i;
+	}
+}
+
+
 void rtpFillVector(std::vector<float> &fv, int offset, int stride, float *start, float *end){
 	start += offset;
 	for(;start<end;start+=stride)
@@ -172,65 +202,83 @@ void rtpFillVector(std::vector<float> &fv, int offset, int stride, float *start,
 
 
 void rtpFillMeshData(MeshData &md, std::string format, float *start, float *end){
-	int stride = rtpFormatElementCount(format);
-	int offset = 0;
+	int sectionCount = rtpGetFormatSections(format);
+	int totalElements = rtpFormatElementCount(format.begin(), format.end());
+	int dataSize = (int)(end-start)/sizeof(float);
+	int elementsSoFar = 0;
+	
+	for(int section=0; section<sectionCount; ++section){
 		
-	for(int i=0;i<format.size();++i){
-		switch(format[i]){
-		case 'x' :
-			rtpFillVector(md.x, offset++, stride, start, end);
-			break;
-			
-		case 'y' :
-			rtpFillVector(md.y, offset++, stride, start, end);
-			break;
-			
-		case 'z' :
-			rtpFillVector(md.z, offset++, stride, start, end);
-			break;
-
-		case 'n' : //normals
-			i++;//what's the next character?
-			switch(format[i]){
+		std::string::iterator sBegin = rtpGetFormatSectionStart(format, section);
+		std::string::iterator sEnd = rtpGetFormatSectionStart(format, section+1);
+		
+		int stride = rtpFormatElementCount(sBegin, sEnd);
+		int offset = 0;
+		
+		//todo : do testing here
+		float *newStart = start + dataSize*elementsSoFar/totalElements;
+		float *newEnd = start + dataSize*( elementsSoFar+stride )/totalElements;
+	
+		for(;sBegin < sEnd; ++sBegin){
+				
+			switch(*sBegin){
 			case 'x' :
-				rtpFillVector(md.nx, offset++, stride, start, end);
+				rtpFillVector(md.x, offset++, stride, newStart, newEnd);
 				break;
 				
 			case 'y' :
-				rtpFillVector(md.ny, offset++, stride, start, end);
+				rtpFillVector(md.y, offset++, stride, newStart, newEnd);
 				break;
 				
 			case 'z' :
-				rtpFillVector(md.nz, offset++, stride, start, end);
+				rtpFillVector(md.z, offset++, stride, newStart, newEnd);
+				break;
+
+			case 'n' : //normals
+				sBegin++;//what's the next character?
+				switch(*sBegin){
+				case 'x' :
+					rtpFillVector(md.nx, offset++, stride, newStart, newEnd);
+					break;
+					
+				case 'y' :
+					rtpFillVector(md.ny, offset++, stride, newStart, newEnd);
+					break;
+					
+				case 'z' :
+					rtpFillVector(md.nz, offset++, stride, newStart, newEnd);
+					break;
+				}
+				break;//END NORMALS
+				
+			case 'u' :
+				rtpFillVector(md.u, offset++, stride, newStart, newEnd);
+				break;
+				
+			case 'v' :
+				rtpFillVector(md.v, offset++, stride, newStart, newEnd);
+				break;
+				
+			case 'r' :
+				rtpFillVector(md.r, offset++, stride, newStart, newEnd);
+				break;
+				
+			case 'g' :
+				rtpFillVector(md.g, offset++, stride, newStart, newEnd);
+				break;
+				
+			case 'b' :
+				rtpFillVector(md.b, offset++, stride, newStart, newEnd);
+				break;
+			
+			case 'p' : //padding
+				offset++;
 				break;
 			}
-			break;//END NORMALS
-			
-		case 'u' :
-			rtpFillVector(md.u, offset++, stride, start, end);
-			break;
-			
-		case 'v' :
-			rtpFillVector(md.v, offset++, stride, start, end);
-			break;
-			
-		case 'r' :
-			rtpFillVector(md.r, offset++, stride, start, end);
-			break;
-			
-		case 'g' :
-			rtpFillVector(md.g, offset++, stride, start, end);
-			break;
-			
-		case 'b' :
-			rtpFillVector(md.b, offset++, stride, start, end);
-			break;
-		
-		case 'p' : //padding
-			offset++;
-			break;
 		}
-	}
+		
+		elementsSoFar += stride;
+	}//end section loop
 }
 
 void rtpMeshDataCopy(MeshData &destination, MeshData &source){

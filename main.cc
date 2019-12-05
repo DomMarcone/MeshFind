@@ -34,6 +34,7 @@ void printFormat(){
 	std::cout << "  u v               texture coordinates" << std::endl;
 	std::cout << "  r g b             red green and blue vertex colors" << std::endl;
 	std::cout << "  p                 padding, which doesn't contribute to the output" << std::endl;
+	std::cout << "  ,                 indicate offset data (for non-interleaved floats)(*beta)" << std::endl;
 }
 
 int main(int argc, char **argv){
@@ -89,7 +90,7 @@ int main(int argc, char **argv){
 			if(i<argc){
 				start = atoi(argv[i]);
 			} else {
-				std::cout << "Couldn't get argument for start position" << std::endl;
+				std::cout << "Couldn't get argument for start position!" << std::endl;
 				exit(-1);
 			}
 		}
@@ -100,7 +101,7 @@ int main(int argc, char **argv){
 			if(i<argc){
 				end = atoi(argv[i]);
 			} else {
-				std::cout << "Couldn't get argument for end position" << std::endl;
+				std::cout << "Couldn't get argument for end position!" << std::endl;
 				exit(-1);
 			}
 		}
@@ -111,7 +112,7 @@ int main(int argc, char **argv){
 			if(i<argc){
 				format = argv[i];
 			} else {
-				std::cout << "Couldn't get argument for format" << std::endl;
+				std::cout << "Couldn't get argument for format!" << std::endl;
 				exit(-1);
 			}
 		}
@@ -127,7 +128,7 @@ int main(int argc, char **argv){
 			if(i<argc){
 				faceVerts = atoi(argv[i]);
 			} else {
-				std::cout << "Couldn't get argument for format" << std::endl;
+				std::cout << "Couldn't get argument for the number of verticies per face!" << std::endl;
 				exit(-1);
 			}
 		}
