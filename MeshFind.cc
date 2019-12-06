@@ -98,7 +98,7 @@ bool mfHasNormals(int *offset, int *stride, float *start, float *end){
 int *mfGetIndiciesEnd(int maxValue, int *start, int *end){
 	for(;start<end && 
 		*start < maxValue &&
-		*start >= 0;++start)
+		*start >= 0;++start);
 	return start--;
 }
 
@@ -106,7 +106,7 @@ int *mfGetIndiciesEnd(int maxValue, int *start, int *end){
 void mfRangeFindIndices(std::vector<mfIndexRange> &iv, int minLength, char *start, char *end){
 	char *newEnd = end-(sizeof(int)*minLength);
 	int *endI = (int*)end;
-	int maxValue = ((int)start-(int)end)/sizeof(int);
+	int maxValue = (int)(end-start)/sizeof(int);
 	
 	for(;start<newEnd; start++){
 		int *startI = (int*)start;

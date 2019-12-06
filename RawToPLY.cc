@@ -191,6 +191,8 @@ std::string::iterator rtpGetFormatSectionStart(std::string format, int section){
 		if(format[i]==',')section--;
 		if(section<=0)return format.begin() + i;
 	}
+	//didn't find enough commas
+	return format.end();
 }
 
 
