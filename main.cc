@@ -23,7 +23,8 @@ void printOptions(){
 	std::cout << "  -a, --analyze     Analyze the file" << std::endl;
 	std::cout << "  -o, --output      Output file name (*.ply)" << std::endl;
 	std::cout << "  -i, --input       Binary input file name" << std::endl;
-	std::cout << "  -v, --face-verts  Number of verticies per face" << std::endl;
+	std::cout << "  --face-verts      Number of verticies per face" << std::endl;
+	std::cout << "  -v, --version     Print version information" << std::endl;
 	std::cout << "  -h, --help        Print help information and exit" << std::endl;
 }
 
@@ -35,6 +36,10 @@ void printFormat(){
 	std::cout << "  r g b             red green and blue vertex colors" << std::endl;
 	std::cout << "  p                 padding, which doesn't contribute to the output" << std::endl;
 	std::cout << "  ,                 indicate offset data (for non-interleaved floats)(*beta)" << std::endl;
+}
+
+void printVersion(){
+	std::cout << "Compiled on " << __TIME__ << " " << __DATE__ << std::endl;
 }
 
 int main(int argc, char **argv){
@@ -60,6 +65,12 @@ int main(int argc, char **argv){
 			printFormat();
 			std::cout << std::endl;
 			exit(0);
+		}
+		
+		//print version
+		if( !strcmp(argv[i],"-v") || !strcmp(argv[i],"--version")){
+			printVersion();
+			std::cout << std::endl;
 		}
 		
 		//input file name
@@ -123,7 +134,7 @@ int main(int argc, char **argv){
 		}
 		
 		//face verticies
-		if( !strcmp(argv[i],"-v") || !strcmp(argv[i],"--face-verts")){
+		if( !strcmp(argv[i],"--face-verts")){
 			i++;
 			if(i<argc){
 				faceVerts = atoi(argv[i]);
