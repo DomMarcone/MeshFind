@@ -45,6 +45,7 @@ void printVersion(){
 int main(int argc, char **argv){
 	std::ifstream inFile;
 	
+	bool exitAfterArgs = false;
 	
 	int start = 0;
 	int end = -1;
@@ -64,7 +65,7 @@ int main(int argc, char **argv){
 			std::cout << std::endl;
 			printFormat();
 			std::cout << std::endl;
-			exit(0);
+			exitAfterArgs = true;
 		}
 		
 		//print version
@@ -143,6 +144,10 @@ int main(int argc, char **argv){
 				exit(-1);
 			}
 		}
+	}
+	
+	if(exitAfterArgs){
+		exit(0);
 	}
 	
 	char *data;
