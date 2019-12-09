@@ -183,6 +183,29 @@ int rtpGetFormatSections(std::string format){
 	return last_result;
 }
 
+//check the format string for validity
+bool rtpValidFormat(std::string format){
+	char count1[] = {'v', 'u', 'r', 'g', 'b'};
+	char count2[] = {'x', 'y', 'z'};
+	char count3[] = {'n'};
+	
+	for(auto i : count1){
+		if(std::count(format.begin(), format.end(), i) > 1)return false;
+	}
+	
+	for(auto i : count2){
+		if(std::count(format.begin(), format.end(), i) > 2)return false;
+	}
+	
+	for(auto i : count3){
+		if(std::count(format.begin(), format.end(), i) > 3)return false;
+	}
+	
+	//todo - further checks
+	
+	return true;
+}
+
 
 std::string::iterator rtpGetFormatSectionStart(std::string format, int section){
 	if(section>=rtpGetFormatSections(format))return format.end();
@@ -405,7 +428,12 @@ void rtpExportMeshData(MeshData &md, int faceVerts, std::string filename){
 
 int rtpExportRange(std::string filename, std::string format, int faceVerts, float *start, float *end){
 	MeshData md;
-	//todo...
+	
+	if(!rtpValidFormat(format)){
+		std::cout << "Invalid format string!" << std::endl;
+		return 1;
+	}
+	
 	rtpFillMeshData(md, format, start, end);
 
 	rtpExportMeshData(md, faceVerts, filename);
